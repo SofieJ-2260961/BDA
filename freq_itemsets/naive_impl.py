@@ -1,4 +1,4 @@
-#  i am naive
+# Naive implementation
 import sys
 import os
 from itertools import combinations
@@ -29,7 +29,10 @@ def read_dataset(file_name, k):
                 else:
                     subsets[subset] = 1
 
-    print(subsets)
+
+    mx = max(subsets.values())
+    print(f"Found sets: {[k for k, v in subsets.items() if v == mx]}")
+    print(f"Maximal occurences: {mx}")
 
 def main():
     if len(sys.argv) < 3:
