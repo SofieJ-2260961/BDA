@@ -10,7 +10,7 @@ def read_dataset(file_name):
 
     max_authors = 0
     num_publ = 0
-    all_authors = []
+    all_authors = set()
     total_authors = 0
 
     with open(full_file_path, 'r') as file:
@@ -21,8 +21,7 @@ def read_dataset(file_name):
             total_authors += len(authors)
             max_authors = max(len(authors), max_authors)
             for author in authors:
-                if author not in all_authors:
-                    all_authors.append(author)
+                all_authors.add(author)
 
 
     print(f"# publications: {num_publ}")
