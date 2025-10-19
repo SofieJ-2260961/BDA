@@ -2,53 +2,48 @@
 import sys
 import os
 from itertools import combinations
+from collections import defaultdict
 
-def read_dataset(file_name, k): 
+def read_dataset(file_name): 
     full_file_path: str = os.path.join(os.path.dirname(__file__), file_name)
 
-    subsets = {}
+    subset_counts = defaultdict(int)
 
-    authors = []
-    
+    max_count_per_k = defaultdict(int)
+    max_subsets_per_k = defaultdict(set)
 
     with open(full_file_path, 'r') as file:
         for line in file:
             line = line.removesuffix("\n")
             authors = line.split(",")
+            k = 1
 
-                
-            if len(authors) > k:
+            while k < len(authors):
 
-                # combination = combinations(authors, k)
-                # for subset in combination:
-                #     subset = frozenset(subset)
-                #     if subset in subsets.keys():
-                #         subsets[subset] += 1
-                #     else:
-                #         subsets[subset] = 1
-                pass
-                        
-            elif len(authors) == k:
-                # subset = frozenset(authors)
-                # if subset in subsets.keys():
-                #     subsets[subset] += 1
-                # else:
-                #     subsets[subset] = 1
-                pass
+                for subset in combinations(authors, k):
+                    subset = frozenset(subset)
+                    subset_counts[subset] += 1
+                    count = subset_counts[subset]
+                    
+                    if count > max_count_per_k[k]:
+                        max_count_per_k[k] = count
+                        max_subsets_per_k[k] = {subset}
+                    elif count == max_count_per_k[k]:
+                        max_subsets_per_k[k].add(subset)
 
+                k += 1    
 
-    mx = max(subsets.values())
-    print(f"Found sets: {[k for k, v in subsets.items() if v == mx]}")
-    print(f"Maximal occurences: {mx}")
+    print(f"Found sets: {list(max_subsets_per_k.items())}")
+    print(f"Maximal occurrences: {max_count_per_k}")
+
 
 def main():
     if len(sys.argv) < 3:
         print("Give file to read")
         sys.exit(1)
     file_name = sys.argv[1]
-    k = int(sys.argv[2])
 
-    read_dataset(file_name, k)
+    read_dataset(file_name)
     
     pass
 
