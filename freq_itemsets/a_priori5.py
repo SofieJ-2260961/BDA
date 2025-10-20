@@ -8,25 +8,39 @@ import time
 def count_frequent_itemsets(frequent: dict, baskets: list, k: int, threshold: int):
     candidate_counts = {}
     
-    for basket in baskets:
-        for combo in combinations(sorted(basket), k):
-            # Check if all (k-1)-subsets are frequent
-            all_subsets_frequent = True
-            for subset in combinations(combo, k - 1):
-                if subset not in frequent:
-                    all_subsets_frequent = False
-                    break          
+    print(f"Checking {len(frequent)} itemsets for k = {k}")
 
-            if all_subsets_frequent:
-                if combo in candidate_counts:
-                    candidate_counts[combo] += 1
-                else:
-                    candidate_counts[combo] = 1
+    frequent_set = set(frequent.keys())
+    frequent_items = set()
+    for itemset in frequent_set:
+        frequent_items.update(itemset)
+    
+    checked = 0
+
+    for basket in baskets:
+        filtered_basket = [item for item in basket if item in frequent_items]
+        if len(filtered_basket) >= k:
+            checked += 1
+            for combo in combinations(sorted(basket), k):
+                # Check if all (k-1)-subsets are frequent
+                all_subsets_frequent = True
+                for subset in combinations(combo, k - 1):
+                    if subset not in frequent:
+                        all_subsets_frequent = False
+                        break          
+
+                if all_subsets_frequent:
+                    if combo in candidate_counts:
+                        candidate_counts[combo] += 1
+                    else:
+                        candidate_counts[combo] = 1
     
     # Check threshold
     frequent_next = {combo: count for combo, count in candidate_counts.items() 
                 if count >= threshold}
     
+    print(f"Checked baskets: {checked}")
+
     return frequent_next
 
 
@@ -101,10 +115,10 @@ def main():
     if threshold < 1:
         print("Error: threshold must be at least 1")
         sys.exit(1)
-        
-    start = time.time()
 
-    author_counts, baskets = read_dataset(file_name, k, threshold)    
+    start = time.time()
+    
+    author_counts, baskets = read_dataset(file_name, k, threshold)
     result = a_priori(author_counts, baskets, k, threshold)
 
     end = time.time()

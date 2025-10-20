@@ -5,10 +5,9 @@ from itertools import combinations
 from collections import defaultdict
 
 def read_dataset(file_name): 
-    full_file_path: str = os.path.join(os.path.dirname(__file__), file_name)
+    full_file_path = os.path.join(os.path.dirname(__file__), file_name)
 
     subset_counts = defaultdict(int)
-
     max_count_per_k = defaultdict(int)
     max_subsets_per_k = defaultdict(set)
 
@@ -16,10 +15,9 @@ def read_dataset(file_name):
         for line in file:
             line = line.removesuffix("\n")
             authors = line.split(",")
-            k = 1
-
-            while k < len(authors):
-
+            n = len(authors)
+            
+            for k in range(1, n):
                 for subset in combinations(authors, k):
                     subset = frozenset(subset)
                     subset_counts[subset] += 1
@@ -30,8 +28,6 @@ def read_dataset(file_name):
                         max_subsets_per_k[k] = {subset}
                     elif count == max_count_per_k[k]:
                         max_subsets_per_k[k].add(subset)
-
-                k += 1    
 
     print(f"Found sets: {list(max_subsets_per_k.items())}")
     print(f"Maximal occurrences: {max_count_per_k}")
@@ -44,9 +40,7 @@ def main():
     file_name = sys.argv[1]
 
     read_dataset(file_name)
-    
-    pass
 
-    
+
 if __name__ == '__main__':
     main()
