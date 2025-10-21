@@ -8,9 +8,6 @@ import time
 def count_frequent_itemsets(frequent: dict, baskets: list, k: int, threshold: int):
     candidate_counts = {}
     
-    # Test to see how far along the program is
-    print(f"{len(frequent)} itemsets for k = {k}")
-
     frequent_set = set(frequent.keys())
     
     # Get all authors that appear in the current frequent itemsets
@@ -51,6 +48,11 @@ def a_priori(frequent_itemsets: dict, baskets: list, threshold: int):
     current_size = 1
     result = ([], 0)
 
+    mx = max(frequent_itemsets.values())
+    result = ([author for author, v in frequent_itemsets.items() if v == mx], mx)
+    print(f"Most frequent author(s) appear in {result[1]} books")
+    print(f"Authors: {result[0]}")
+
     # Keep looking for maximal k-author sets until none are found
     while True:
         if len(frequent_itemsets) == 0:
@@ -66,7 +68,11 @@ def a_priori(frequent_itemsets: dict, baskets: list, threshold: int):
         mx = max(frequent_itemsets.values())
         result = ([combo for combo, v in frequent_itemsets.items() if v == mx], mx)
         print(f"Most frequent {current_size}-author combination(s) appear in {result[1]} books")
-        print(f"Combinations: {result[0]}")
+        print(f"{len(result[0])} combination(s):")
+        for combo in result[0]:
+            print(f"{combo}")
+        print()
+
    
 
 def read_dataset(file_name, threshold): 
