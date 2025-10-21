@@ -3,6 +3,7 @@ import sys
 import os
 from itertools import combinations
 from collections import defaultdict
+import time
 
 def read_dataset(file_name): 
     full_file_path = os.path.join(os.path.dirname(__file__), file_name)
@@ -17,7 +18,7 @@ def read_dataset(file_name):
             authors = line.split(",")
             n = len(authors)
             
-            for k in range(1, n):
+            for k in range(1, n+1):
                 for subset in combinations(authors, k):
                     subset = frozenset(subset)
                     subset_counts[subset] += 1
@@ -29,17 +30,22 @@ def read_dataset(file_name):
                     elif count == max_count_per_k[k]:
                         max_subsets_per_k[k].add(subset)
 
-    print(f"Found sets: {list(max_subsets_per_k.items())}")
-    print(f"Maximal occurrences: {max_count_per_k}")
+    for k, subsets in zip(max_count_per_k.items(), max_subsets_per_k.values()):
+        print(f"{len(subsets)} set(s) found for k = {k[0]} with max = {k[1]}: ")
+        for subset in subsets:
+            print(subset)
 
 
 def main():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print("Give file to read")
         sys.exit(1)
     file_name = sys.argv[1]
 
+    start = time.time()
     read_dataset(file_name)
+    end = time.time()
+    print(f"Total time: {end - start:.4f} seconds")
 
 
 if __name__ == '__main__':
