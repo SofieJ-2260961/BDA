@@ -47,9 +47,7 @@ def batch(iterable, size):
 _WORD_RE = re.compile(r"\b\w+\b", flags=re.UNICODE)
 
 def extract_id_and_body(attrs):
-    """Return (id, body) from a row attributes dict.
-
-    Returns (None, None) if no Body or Id is present.
+    """Return (id, body) from a row attributes dict, or (None, None) if no Body or Id is present.
     """
     pid = attrs.get('Id')
     body = attrs.get('Body')
@@ -57,19 +55,9 @@ def extract_id_and_body(attrs):
         return None, None
     return pid, body
 
-def extract_question_id_and_body(attrs):
-    if attrs.get('PostTypeId') == "2": return None, None
-    pid = attrs.get('Id')
-    body = attrs.get('Body')
-    if pid is None or body is None:
-        return None, None
-    return pid, body
 
 def clean_body_html(body):
-    """Convert HTML entities and strip tags, returning plain text.
-
-    Uses html.unescape then bleach.clean with no allowed tags/attrs and strip=True.
-    """
+    """Convert HTML entities and strip tags, returning plain text."""
     if body is None:
         return ''
     text = _unescape(body)
@@ -91,7 +79,7 @@ def remove_stopwords(tokens):
 
 
 def shingles_from_tokens(tokens, k=5):
-    """Return a set of k-word shingles (joined by space) from tokens list."""
+    """Return a set of k-word shingles."""
     if k <= 0:
         raise ValueError('k must be > 0')
     if len(tokens) < k:
@@ -100,27 +88,8 @@ def shingles_from_tokens(tokens, k=5):
 
 
 def process_post(attrs, k=5):
-    """Given a row attributes dict, return (id, shingles_set).
-
-    The steps are: extract Id & Body, unescape & strip HTML, tokenize, remove stopwords,
-    and form k-word shingles.
-    """
+    """Given a row attributes dict, return (id, shingles_set)."""
     pid, body = extract_id_and_body(attrs)
-    if pid is None:
-        return None, set()
-    cleaned = clean_body_html(body)
-    tokens = tokenize_text(cleaned)
-    tokens = remove_stopwords(tokens)
-    shingles = shingles_from_tokens(tokens, k=k)
-    return pid, shingles
-
-def process_questions_only(attrs, k=5):
-    """Given a row attributes dict, return (id, shingles_set).
-
-    The steps are: extract Id & Body, unescape & strip HTML, tokenize, remove stopwords,
-    and form k-word shingles.
-    """
-    pid, body = extract_question_id_and_body(attrs)
     if pid is None:
         return None, set()
     cleaned = clean_body_html(body)
