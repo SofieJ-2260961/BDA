@@ -5,17 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def generate_indices(numposts: int, sample_size: int) -> List[int]:
-    indices = []
-    for _ in range(sample_size):
-        indices.append(random.randrange(0, numposts))
-    return indices
-
-
-def sample_posts_from_file(path: str, numposts: int, sample_size: int = 1000) -> List[Tuple[str, Set[str]]]:
+def sample_posts_from_file(path: str, numposts: int, sample_size: int) -> List[Tuple[str, Set[str]]]:
     """Sample posts from a txt file and return list of (id, shingles_set)."""
     posts = []
-    indices = generate_indices(numposts, sample_size)
+    indices = random.sample(range(num_posts), sample_size)
     count = 0
     with open(path) as dataset:
         for line in dataset:
